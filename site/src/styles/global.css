@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-base-100 text-base-content;
+  min-height: 100vh;
+}
+
+/* Skip to content link */
+.skip-link {
+  @apply fixed top-2 left-2 z-50 px-4 py-2 bg-primary text-primary-content rounded;
+  @apply -translate-y-20 focus:translate-y-0 transition-transform;
+}
+
+/* Focus visible styles for accessibility */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Code highlighting for docs */
+pre {
+  @apply bg-base-300 p-4 rounded-lg overflow-x-auto;
+}
+
+code {
+  @apply bg-base-200 px-1 py-0.5 rounded text-sm;
+}
+
+pre code {
+  @apply bg-transparent p-0;
+}
+
+/* Table styles */
+table {
+  @apply w-full border-collapse;
+}
+
+th {
+  @apply bg-base-200 p-2 text-left font-semibold;
+}
+
+td {
+  @apply p-2 border-b border-base-300;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  @apply text-sm opacity-70;
+}

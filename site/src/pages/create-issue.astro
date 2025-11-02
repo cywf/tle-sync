@@ -1,0 +1,120 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL || '/tle-sync';
+
+const issueTypes = [
+  {
+    title: 'Bug Report',
+    description: 'Report a bug or issue',
+    icon: 'bug',
+    labels: 'bug',
+    template: 'bug_report.yml',
+  },
+  {
+    title: 'Feature Request',
+    description: 'Suggest a new feature or enhancement',
+    icon: 'lightbulb',
+    labels: 'enhancement',
+    template: 'feature_request.yml',
+  },
+  {
+    title: 'Documentation',
+    description: 'Improve or fix documentation',
+    icon: 'document',
+    labels: 'documentation',
+    template: 'documentation.yml',
+  },
+];
+
+const getIconPath = (icon: string) => {
+  switch (icon) {
+    case 'bug':
+      return 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z';
+    case 'lightbulb':
+      return 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z';
+    case 'document':
+      return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
+    default:
+      return '';
+  }
+};
+---
+
+<Layout title="Create Issue" description="Create a new issue on GitHub">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-4xl font-bold mb-2">Create Issue</h1>
+      <p class="text-lg opacity-70">
+        Choose an issue type to get started on GitHub.
+      </p>
+    </div>
+
+    <div class="breadcrumbs text-sm">
+      <ul>
+        <li><a href={base}>Home</a></li>
+        <li>Create Issue</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {issueTypes.map((type) => (
+        <div class="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow">
+          <div class="card-body">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="p-2 bg-primary rounded-lg text-primary-content">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={getIconPath(type.icon)} />
+                </svg>
+              </div>
+              <h2 class="card-title">{type.title}</h2>
+            </div>
+            <p class="mb-4 opacity-80">{type.description}</p>
+            <div class="card-actions justify-end">
+              <a
+                href={`https://github.com/cywf/tle-sync/issues/new?template=${type.template}&labels=${type.labels}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-primary btn-block"
+              >
+                Create {type.title}
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="divider">OR</div>
+
+    <div class="card bg-base-200 shadow-xl">
+      <div class="card-body text-center">
+        <h2 class="card-title justify-center">Create Blank Issue</h2>
+        <p class="opacity-70">Start with a blank template for other types of issues.</p>
+        <div class="card-actions justify-center">
+          <a
+            href="https://github.com/cywf/tle-sync/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline"
+          >
+            Create Blank Issue
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div>
+        <h3 class="font-bold">Need help?</h3>
+        <p class="text-sm">
+          Check out the <a href={`${base}/docs`} class="link">documentation</a> or browse
+          <a href={`${base}/discussions`} class="link">discussions</a> first.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

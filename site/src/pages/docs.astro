@@ -1,0 +1,199 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { marked } from 'marked';
+
+const base = import.meta.env.BASE_URL || '/tle-sync';
+
+// Read README.md from the repository root
+let readmeContent = '';
+try {
+  const readmeResponse = await fetch(`${Astro.url.origin}${base}/README.md`);
+  if (readmeResponse.ok) {
+    readmeContent = await readmeResponse.text();
+  } else {
+    readmeContent = `# tle-sync
+
+**Automate the fetching, versioning, and (optionally) Notion-sync of TLE data** for Low Earth and Geostationary satellites.
+
+## Features
+- Fetches current TLEs for LEO & GEO lists on a 24 h cron
+- Version-controls all TLE files under \`tle_data/\`
+- **Optional** Notion integration: pushes TLE lines back into your Notion databases
+
+## Setup
+
+See the main README.md in the repository for full setup instructions.`;
+  }
+} catch (e) {
+  readmeContent = '# Documentation\n\nDocumentation is being prepared.';
+}
+
+// Convert markdown to HTML
+const htmlContent = marked(readmeContent);
+
+// Generate TOC from headings
+const headings: { level: number; text: string; id: string }[] = [];
+const tocRegex = /^(#{1,6})\s+(.+)$/gm;
+let match;
+while ((match = tocRegex.exec(readmeContent)) !== null) {
+  const level = match[1].length;
+  const text = match[2];
+  const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+  headings.push({ level, text, id });
+}
+---
+
+<Layout title="Documentation" description="Documentation for tle-sync">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-4xl font-bold mb-2">Documentation</h1>
+      <p class="text-lg opacity-70">
+        Learn how to use and configure tle-sync.
+      </p>
+    </div>
+
+    <div class="breadcrumbs text-sm">
+      <ul>
+        <li><a href={base}>Home</a></li>
+        <li>Documentation</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Table of Contents -->
+      {headings.length > 0 && (
+        <aside class="lg:col-span-1">
+          <div class="card bg-base-200 shadow-xl sticky top-24">
+            <div class="card-body">
+              <h2 class="card-title text-lg">Contents</h2>
+              <ul class="menu menu-sm p-0">
+                {headings.map((heading) => (
+                  <li style={`padding-left: ${(heading.level - 1) * 0.75}rem`}>
+                    <a href={`#${heading.id}`} class="py-1">
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </aside>
+      )}
+
+      <!-- Main Documentation Content -->
+      <div class={headings.length > 0 ? 'lg:col-span-3' : 'lg:col-span-4'}>
+        <article class="prose prose-invert max-w-none card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <div set:html={htmlContent} />
+
+            <!-- Notion Integration Section -->
+            <div class="divider my-8"></div>
+            <h2 id="notion-integration">Notion Integration</h2>
+            <div class="alert alert-info">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 class="font-bold">Optional Notion Integration</h3>
+                <p class="text-sm">
+                  TLE Sync can optionally push TLE data to Notion databases.
+                </p>
+              </div>
+            </div>
+
+            <h3>Required Secrets</h3>
+            <p>
+              To enable Notion integration, configure these secrets in your GitHub repository settings:
+            </p>
+            <ul>
+              <li><code>NOTION_TOKEN</code> - Your Notion Internal Integration token</li>
+              <li><code>NOTION_LEO_DB_ID</code> - Database ID for LEO satellites</li>
+              <li><code>NOTION_GEO_DB_ID</code> - Database ID for GEO satellites</li>
+            </ul>
+
+            <h3>Security Considerations</h3>
+            <div class="alert alert-warning">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h4 class="font-bold">Security Notice</h4>
+                <ul class="text-sm list-disc ml-5">
+                  <li>Secrets are only used server-side during CI/CD builds</li>
+                  <li>No tokens or credentials are exposed to the client/browser</li>
+                  <li>This documentation site is 100% static with no server component</li>
+                  <li>TLE data is public and does not contain sensitive information</li>
+                </ul>
+              </div>
+            </div>
+
+            <h3>How It Works</h3>
+            <ol>
+              <li>The GitHub Actions workflow runs on schedule (nightly at 04:00 UTC)</li>
+              <li>The <code>scripts/update_tle.py</code> script fetches TLE data from Celestrak</li>
+              <li>If Notion secrets are configured, TLE lines are pushed to the specified databases</li>
+              <li>All TLE files are committed to the repository under <code>tle_data/</code></li>
+            </ol>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose {
+    @apply text-base-content;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    @apply text-base-content;
+    scroll-margin-top: 6rem;
+  }
+
+  .prose a {
+    @apply text-primary;
+  }
+
+  .prose a:hover {
+    opacity: 0.8;
+  }
+
+  .prose code {
+    @apply bg-base-300 text-accent px-1 py-0.5 rounded;
+  }
+
+  .prose pre {
+    @apply bg-base-300 overflow-x-auto;
+  }
+
+  .prose pre code {
+    @apply bg-transparent;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-4 italic opacity-80;
+  }
+
+  .prose ul,
+  .prose ol {
+    @apply ml-6;
+  }
+
+  .prose table {
+    @apply w-full;
+  }
+
+  .prose th {
+    @apply bg-base-300 p-2 text-left;
+  }
+
+  .prose td {
+    @apply border-b border-base-300 p-2;
+  }
+</style>

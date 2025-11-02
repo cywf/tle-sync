@@ -1,0 +1,151 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL || '/tle-sync';
+
+let projectData: any = null;
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${Astro.url.origin}${base}/data/projects.json`);
+  if (response.ok) {
+    projectData = await response.json();
+  }
+} catch (e) {
+  error = 'Project data not available';
+}
+---
+
+<Layout title="Development Board" description="Project board and issue tracking">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-4xl font-bold mb-2">Development Board</h1>
+      <p class="text-lg opacity-70">
+        Track ongoing work, todos, and completed tasks.
+      </p>
+    </div>
+
+    <div class="breadcrumbs text-sm">
+      <ul>
+        <li><a href={base}>Home</a></li>
+        <li>Development Board</li>
+      </ul>
+    </div>
+
+    {error ? (
+      <div class="alert alert-warning">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <h3 class="font-bold">Project board unavailable</h3>
+          <p class="text-sm">Project data will be available after the first CI build.</p>
+        </div>
+      </div>
+    ) : projectData ? (
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Todo Column */}
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              To Do
+              <span class="badge badge-primary">{projectData.todo?.length || 0}</span>
+            </h2>
+            <div class="space-y-2 max-h-96 overflow-y-auto">
+              {projectData.todo?.map((item: any) => (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block p-3 bg-base-300 rounded hover:bg-base-100 transition-colors"
+                >
+                  <div class="font-semibold text-sm">{item.title}</div>
+                  <div class="text-xs opacity-70 mt-1">#{item.number}</div>
+                </a>
+              ))}
+              {(!projectData.todo || projectData.todo.length === 0) && (
+                <div class="text-sm opacity-70 text-center py-4">No items</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* In Progress Column */}
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              In Progress
+              <span class="badge badge-secondary">{projectData.doing?.length || 0}</span>
+            </h2>
+            <div class="space-y-2 max-h-96 overflow-y-auto">
+              {projectData.doing?.map((item: any) => (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block p-3 bg-base-300 rounded hover:bg-base-100 transition-colors"
+                >
+                  <div class="font-semibold text-sm">{item.title}</div>
+                  <div class="text-xs opacity-70 mt-1">#{item.number}</div>
+                </a>
+              ))}
+              {(!projectData.doing || projectData.doing.length === 0) && (
+                <div class="text-sm opacity-70 text-center py-4">No items</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Done Column */}
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Done
+              <span class="badge badge-success">{projectData.done?.length || 0}</span>
+            </h2>
+            <div class="space-y-2 max-h-96 overflow-y-auto">
+              {projectData.done?.map((item: any) => (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block p-3 bg-base-300 rounded hover:bg-base-100 transition-colors opacity-70"
+                >
+                  <div class="font-semibold text-sm line-through">{item.title}</div>
+                  <div class="text-xs opacity-70 mt-1">#{item.number}</div>
+                </a>
+              ))}
+              {(!projectData.done || projectData.done.length === 0) && (
+                <div class="text-sm opacity-70 text-center py-4">No items</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div class="flex justify-center items-center min-h-[400px]">
+        <span class="loading loading-spinner loading-lg"></span>
+      </div>
+    )}
+
+    <div class="text-center">
+      <a
+        href="https://github.com/cywf/tle-sync/issues"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-primary"
+      >
+        View All Issues on GitHub
+      </a>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,24 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import TLEDataExplorer from '@/components/TLEDataExplorer';
+---
+
+<Layout title="Data Explorer" description="Browse and download TLE data files">
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-4xl font-bold mb-2">TLE Data Explorer</h1>
+      <p class="text-lg opacity-70">
+        Browse, filter, and download Two-Line Element (TLE) files for LEO and GEO satellites.
+      </p>
+    </div>
+
+    <div class="breadcrumbs text-sm">
+      <ul>
+        <li><a href={import.meta.env.BASE_URL || '/tle-sync'}>Home</a></li>
+        <li>Data Explorer</li>
+      </ul>
+    </div>
+
+    <TLEDataExplorer client:load />
+  </div>
+</Layout>

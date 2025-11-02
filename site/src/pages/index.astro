@@ -1,0 +1,164 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL || '/tle-sync';
+---
+
+<Layout title="Home">
+  <div class="space-y-8">
+    <!-- Hero Section -->
+    <div class="hero bg-base-200 rounded-xl">
+      <div class="hero-content text-center py-12">
+        <div class="max-w-2xl">
+          <h1 class="text-5xl font-bold mb-4">TLE Sync</h1>
+          <p class="text-xl mb-6">
+            Automate the fetching, versioning, and (optionally) Notion-sync of TLE data for Low Earth and Geostationary satellites.
+          </p>
+          <div class="flex gap-4 justify-center flex-wrap">
+            <a href={`${base}/data-explorer`} class="btn btn-primary">
+              Explore TLE Data
+            </a>
+            <a
+              href="https://github.com/cywf/tle-sync"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-outline"
+            >
+              View on GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <section>
+      <h2 class="text-3xl font-bold mb-6">Features</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Automated Updates
+            </h3>
+            <p>Fetches current TLEs for LEO & GEO lists on a 24-hour cron schedule using GitHub Actions.</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+              </svg>
+              Version Controlled
+            </h3>
+            <p>All TLE files are version-controlled under <code>tle_data/</code> with full git history.</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <h3 class="card-title">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Notion Integration
+            </h3>
+            <p>Optional integration to push TLE lines back into your Notion databases for tracking.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section>
+      <h2 class="text-3xl font-bold mb-6">How It Works</h2>
+      <div class="space-y-4">
+        <div class="alert">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <div>
+            <h3 class="font-bold">Step 1: GitHub Actions Trigger</h3>
+            <p class="text-sm">The workflow runs nightly at 04:00 UTC or on manual dispatch.</p>
+          </div>
+        </div>
+
+        <div class="alert">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <div>
+            <h3 class="font-bold">Step 2: Fetch TLE Data</h3>
+            <p class="text-sm">The <code>scripts/update_tle.py</code> script fetches TLE data from Celestrak.</p>
+          </div>
+        </div>
+
+        <div class="alert">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <div>
+            <h3 class="font-bold">Step 3: Save & Commit</h3>
+            <p class="text-sm">TLE files are saved to <code>tle_data/</code> and automatically committed to the repository.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section>
+      <h2 class="text-3xl font-bold mb-6">Quick Links</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a
+          href="https://github.com/cywf/tle-sync/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-block"
+        >
+          Issues
+        </a>
+        <a
+          href="https://github.com/cywf/tle-sync/discussions"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-block"
+        >
+          Discussions
+        </a>
+        <a
+          href="https://github.com/cywf/tle-sync/releases"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-block"
+        >
+          Releases
+        </a>
+        <a
+          href="https://github.com/cywf/tle-sync/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-block"
+        >
+          License
+        </a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="card bg-primary text-primary-content">
+      <div class="card-body text-center">
+        <h2 class="card-title justify-center text-2xl">Ready to Explore?</h2>
+        <p>Browse the latest TLE data for LEO and GEO satellites.</p>
+        <div class="card-actions justify-center">
+          <a href={`${base}/data-explorer`} class="btn btn-secondary">
+            Open Data Explorer
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,76 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: site/package-lock.json
+
+      - name: Copy TLE data to public
+        run: |
+          mkdir -p site/public/tle
+          if [ -d "tle_data" ]; then
+            cp -r tle_data/* site/public/tle/ || echo "No TLE data to copy"
+          fi
+
+      - name: Copy README to public
+        run: |
+          cp README.md site/public/README.md
+
+      - name: Install dependencies
+        working-directory: ./site
+        run: npm ci
+
+      - name: Generate data snapshots
+        working-directory: ./site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run generate-data || echo "Data generation completed with warnings"
+
+      - name: Set build environment variables
+        run: |
+          echo "PUBLIC_COMMIT_SHA=${{ github.sha }}" >> site/.env
+          echo "PUBLIC_DEPLOY_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> site/.env
+
+      - name: Build site
+        working-directory: ./site
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
